@@ -3,7 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pyramid Patterns | Infometrix</title>
+<title>English Football Pyramid Patterns | Infometrix</title>
+<meta name="description" content="1 in 4 promotions was undone the very next season. Three seasons of English football, told through the clubs.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Infometrix">
+<meta property="og:title" content="Up, down and straight back: English Football Pyramid Patterns">
+<meta property="og:description" content="1 in 4 promotions was undone the very next season. Three seasons of English football, told through the clubs.">
+<meta property="og:url" content="https://infometrix-co.github.io/english-pyramid/">
+<meta property="og:image" content="https://infometrix-co.github.io/english-pyramid/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Up, down and straight back. 1 in 4 promotions was undone the very next season. Infometrix.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <script>document.documentElement.className += " js";</script>
 <style>
 :root{
@@ -340,13 +353,13 @@ html{scroll-behavior:smooth}
     <h2>Four things to take to the next match</h2>
     <div class="tgrid">
       <article class="tc"><p class="tn">6<small> of 24</small></p><p class="tl">Going up is half the job: 6 of 24 promotions were undone a year later.</p>
-        <p class="ta"><a href="#ladder">See it</a><button class="copy" type="button">Copy to share</button></p></article>
+        <p class="ta"><a class="seeit" href="#ladder">See the chart &uarr;</a><button class="copy" type="button" data-to="ladder">Share</button></p></article>
       <article class="tc"><p class="tn">68.1%<small> v 72.3%</small></p><p class="tl">Judge a club against its own division: the typical League Two side completes 68.1% of its passes, less than any Premier League side in these seasons.</p>
-        <p class="ta"><a href="#ball">See it</a><button class="copy" type="button">Copy to share</button></p></article>
+        <p class="ta"><a class="seeit" href="#ball">See the chart &uarr;</a><button class="copy" type="button" data-to="ball">Share</button></p></article>
       <article class="tc"><p class="tn">Bromley</p><p class="tl">High pass completion is a good sign, not a verdict: Bromley won the league and went up in 2025/26 with the lowest completion rate in League Two.</p>
-        <p class="ta"><a href="#exceptions">See it</a><button class="copy" type="button">Copy to share</button></p></article>
+        <p class="ta"><a class="seeit" href="#exceptions">See the chart &uarr;</a><button class="copy" type="button" data-to="exceptions">Share</button></p></article>
       <article class="tc"><p class="tn">None<small> v 9</small></p><p class="tl">At the top, going down came with less of the ball: none of 28 against 9 of 32.</p>
-        <p class="ta"><a href="#possession">See it</a><button class="copy" type="button">Copy to share</button></p></article>
+        <p class="ta"><a class="seeit" href="#possession">See the chart &uarr;</a><button class="copy" type="button" data-to="possession">Share</button></p></article>
     </div>
     <nav class="cnav" aria-label="Chapter navigation"><a href="#overview">&uarr; Back to overview</a><a href="#wrong">Next: What we got wrong &darr;</a></nav>
   </div>
@@ -411,15 +424,36 @@ html{scroll-behavior:smooth}
     function f(t){ if(!t0) t0=t; var p=Math.min(1,(t-t0)/1200); el.textContent=Math.round(to*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(f); }
     requestAnimationFrame(f);
   });
-  // copy a takeaway to share
+  // share a takeaway: native share sheet where there is one, else copy sentence and link
+  var PUBLIC = 'https://infometrix-co.github.io/english-pyramid/';
   document.querySelectorAll('.tc .copy').forEach(function(b){
     b.addEventListener('click', function(){
       var card = b.closest('.tc');
-      var txt = card.querySelector('.tl').textContent.trim() + ' (Infometrix, English Football Pyramid Patterns)';
-      var done = function(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy to share'; }, 1800); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(txt).then(done, function(){ window.getSelection().selectAllChildren(card.querySelector('.tl')); b.textContent='Selected, press Cmd+C'; });
-      } else { window.getSelection().selectAllChildren(card.querySelector('.tl')); b.textContent='Selected, press Cmd+C'; }
+      var line = card.querySelector('.tl').textContent.trim();
+      var url = PUBLIC + '#' + b.getAttribute('data-to');
+      var label = b.textContent;
+      var flash = function(msg){ b.textContent = msg; setTimeout(function(){ b.textContent = label; }, 2200); };
+      var copy = function(){
+        var txt = line + ' ' + url;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(function(){ flash('Copied with link'); },
+            function(){ window.prompt('Copy this:', txt); });
+        } else { window.prompt('Copy this:', txt); }
+      };
+      if (navigator.share) {
+        navigator.share({ title: 'English Football Pyramid Patterns', text: line, url: url })
+          .catch(function(e){ if (!e || e.name !== 'AbortError') copy(); });
+      } else { copy(); }
+    });
+  });
+  // see the chart: scroll by script so it works even where anchor jumps are blocked
+  document.querySelectorAll('.tc .seeit').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      try { history.replaceState(null, '', a.getAttribute('href')); } catch (x) {}
     });
   });
 })();
